@@ -1,0 +1,63 @@
+import { Sequelize, DataTypes } from "sequelize";
+import fs from "fs";
+import path from "path";
+require("dotenv").config();
+
+const { DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME } = process.env;
+
+const options: any = {
+  dialect: "mysql",
+  host: DB_HOST,
+  port: DB_PORT,
+  username: DB_USER,
+  password: DB_PASSWORD,
+  database: DB_NAME,
+  logging: false,
+  native: false,
+};
+
+const sequelize = new Sequelize(DB_NAME!, DB_USER!, DB_PASSWORD!, options);
+
+const basename = path.basename(__filename);
+
+// Leer todos los archivos de la carpeta models y agregarlos al arreglo modelDefiners
+const modelDefiners: Array<(sequelize: any, DataTypes: any) => void> = [];
+fs.readdirSync(__dirname + "/models")
+  /*   .map((file) => {
+    console.log("File:", file);
+    return file;
+  }) */
+  .filter(
+    (file) =>
+      file.indexOf(".") !== 0 &&
+      file !== basename &&
+      (file.slice(-3) === ".ts" || file.slice(-3) === ".js")
+  )
+  .forEach((file) => {
+    const modelDefiner = require(path.join(__dirname + "/models", file)).model;
+    modelDefiners.push(modelDefiner);
+  });
+
+// Agregar todos los modelos definidos al objeto sequelize.models
+for (const modelDefiner of modelDefiners) {
+  modelDefiner(sequelize, DataTypes);
+}
+
+// En sequelize.models están todos los modelos importados como propiedades
+// Para relacionarlos hacemos un destructuring
+export const { Users, Posts, Images, Covers } = sequelize.models;
+
+Posts.hasMany(Images, {
+  foreignKey: "postId",
+  as: "images",
+  onDelete: "CASCADE",
+});
+Images.belongsTo(Posts, {
+  foreignKey: "postId",
+  as: "post",
+});
+
+export const conn = sequelize;
+export const models = sequelize.models;
+
+export { Sequelize };

@@ -1,0 +1,17 @@
+export interface PostTS {
+  id?: string;
+  title: string;
+  category: string;
+  contentHtml: string;
+  coverUrl: string;
+  tags: string;
+  state: PostState;
+  reads: number;
+  author: string;
+  date: Date | string;
+}
+
+export enum PostState {
+  PENDIENTE = "Pendiente",
+  PUBLICADO = "Publicado",
+}
