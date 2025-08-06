@@ -62,11 +62,10 @@ router.post("/:id/img", upload.single("file"), async (req, res) => {
     const id = req.params.id;
     const file = req.file;
 
-    if (!process.env.API_URL) throw new Error("missing env 'API_URL'");
     if (!id) throw new Error("missing param 'id'");
     if (!file) throw new Error("missing cover image 'file'");
 
-    const url = process.env.API_URL + (await saveImagesByPost(file, id));
+    const url = await saveImagesByPost(file, id);
 
     res.status(200).json({ url: url });
   } catch (error) {

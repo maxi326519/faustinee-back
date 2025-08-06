@@ -36,14 +36,7 @@ export async function getPosts(filters: {
     where,
   });
 
-  const postFormated = posts.map(
-    (post): PostTS => ({
-      ...post.dataValues,
-      coverUrl: process.env.API_URL + post.dataValues.coverUrl,
-    })
-  );
-
-  return postFormated;
+  return posts;
 }
 
 // Crear una publicación nueva
@@ -61,17 +54,19 @@ export async function setPost(data: PostTS, file: Express.Multer.File) {
     date: data.date,
   });
 
-  // Change img path
-  const imgUrl = await saveImagesByPost(file, newPost.dataValues.id);
+  let lastPost: PostTS = { ...newPost.dataValues };
 
-  // Update cover
-  const postUpdated = await newPost.update({ coverUrl: imgUrl });
-  const postFormated: PostTS = {
-    ...postUpdated.dataValues,
-    coverUrl: process.env.API_URL + postUpdated.dataValues.coverUrl,
-  };
+  if (file) {
+    // Change img path
+    const imgUrl = await saveImagesByPost(file, newPost.dataValues.id);
 
-  return postFormated;
+    if (imgUrl) {
+      // Update cover
+      await newPost.update({ coverUrl: imgUrl });
+      lastPost.coverUrl = imgUrl;
+    }
+  }
+  return lastPost;
 }
 
 export async function saveImagesByPost(
@@ -88,7 +83,7 @@ export async function saveImagesByPost(
       const destPath = path.join(folder, fileName);
       fs.renameSync(file.path, destPath);
 
-      coverImageUrl = `/uploads/posts/${postId}/${fileName}`;
+      coverImageUrl = `${process.env.API_URL}/uploads/posts/${postId}/${fileName}`;
     }
     return coverImageUrl;
   } catch (error) {
@@ -109,39 +104,14 @@ export async function updatePost(
 
   // Si hay nuevo archivo de portada
   if (file) {
-    // Eliminar portada anterior si existe
-    const previousFileName = path.basename(post.dataValues.coverUrl);
-    const folder = getPostFolder(id);
-    const previousFilePath = path.join(folder, previousFileName);
-
-    try {
-      if (fs.existsSync(previousFilePath)) {
-        fs.unlinkSync(previousFilePath);
-        console.log("Portada anterior eliminada:", previousFilePath);
-      }
-    } catch (err) {
-      console.error("Error al eliminar la portada anterior:", err);
-    }
-
-    fs.mkdirSync(folder, { recursive: true });
-
-    const fileName = `${Date.now()}-${file.originalname}`;
-    const destPath = path.join(folder, fileName);
-    fs.renameSync(file.path, destPath);
-
-    newData.coverUrl = `/uploads/posts/${newData.id!}/${fileName}`;
+    const imgUrl = await saveImagesByPost(file, newData.id!);
+    if (imgUrl) newData.coverUrl = imgUrl;
   }
-
-  if (!process.env.API_URL) throw new Error("missing env API_URL");
 
   // Actualizar el post
   await post.update(newData);
-  const postFormated: PostTS = {
-    ...post.dataValues,
-    coverUrl: process.env.API_URL + post.dataValues.coverUrl,
-  };
 
-  return postFormated;
+  return newData;
 }
 
 // Eliminar publicación y su carpeta
