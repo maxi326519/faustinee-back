@@ -66,8 +66,12 @@ export async function setPost(data: PostTS, file: Express.Multer.File) {
 
   // Update cover
   const postUpdated = await newPost.update({ coverUrl: imgUrl });
+  const postFormated: PostTS = {
+    ...postUpdated.dataValues,
+    coverUrl: process.env.API_URL + postUpdated.dataValues.coverUrl,
+  };
 
-  return postUpdated;
+  return postFormated;
 }
 
 export async function saveImagesByPost(
@@ -86,7 +90,7 @@ export async function saveImagesByPost(
 
       coverImageUrl = `/uploads/posts/${postId}/${fileName}`;
     }
-    return process.env.API_URL + coverImageUrl;
+    return coverImageUrl;
   } catch (error) {
     console.log(error);
   }
@@ -128,9 +132,16 @@ export async function updatePost(
     newData.coverUrl = `/uploads/posts/${newData.id!}/${fileName}`;
   }
 
+  if (!process.env.API_URL) throw new Error("missing env API_URL");
+
   // Actualizar el post
   await post.update(newData);
-  return post;
+  const postFormated: PostTS = {
+    ...post.dataValues,
+    coverUrl: process.env.API_URL + post.dataValues.coverUrl,
+  };
+
+  return postFormated;
 }
 
 // Eliminar publicación y su carpeta
