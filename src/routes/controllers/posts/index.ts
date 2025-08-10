@@ -27,16 +27,21 @@ export async function getPosts(filters: {
   if (order.length === 0) order.push(["date", "DESC"]);
   if (category) where.category = category;
 
-  console.log(order, where);
-
-  const posts = await Posts.findAll({
+  const { rows: posts, count: totalItems } = await Posts.findAndCountAll({
     limit,
     offset,
     order,
     where,
   });
 
-  return posts;
+  return {
+    items: posts,
+    page: {
+      current: page,
+      items,
+      totalPages: Math.ceil(totalItems / items),
+    },
+  };
 }
 
 // Crear una publicación nueva
