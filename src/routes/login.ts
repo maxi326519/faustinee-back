@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { verificarToken } from "./controllers/verifications";
 import { loginUser } from "./controllers/login";
-import { Users } from "../db";
 import { Router } from "express";
+import { Users } from "../db";
 
 const router = Router();
 
@@ -12,7 +12,9 @@ router.post("/", async (req: Request, res: Response) => {
 
     // Validación básica de entrada
     if (!correo || !password) {
-      return res.status(400).json({ message: "Correo y contraseña son obligatorios" });
+      return res
+        .status(400)
+        .json({ message: "Correo y contraseña son obligatorios" });
     }
 
     const result = await loginUser(correo, password);
@@ -21,11 +23,11 @@ router.post("/", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error en login:", error);
 
-    const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+    const errorMessage =
+      error instanceof Error ? error.message : "Error desconocido";
     return res.status(500).json({ message: errorMessage });
   }
 });
-
 
 router.post("/token", verificarToken, async (req: Request, res: Response) => {
   try {
@@ -33,7 +35,11 @@ router.post("/token", verificarToken, async (req: Request, res: Response) => {
 
     // Validación del usuario en el body
     if (!user || !user.userId) {
-      return res.status(400).json({ message: "Parámetro 'user' o 'userId' faltante en la solicitud." });
+      return res
+        .status(400)
+        .json({
+          message: "Parámetro 'user' o 'userId' faltante en la solicitud.",
+        });
     }
 
     // Buscar usuario en la base de datos excluyendo la contraseña
@@ -52,12 +58,13 @@ router.post("/token", verificarToken, async (req: Request, res: Response) => {
     console.error("Error al obtener usuario por token:", error);
 
     if (error instanceof Error) {
-      return res.status(400).json({ message: `Error de solicitud: ${error.message}` });
+      return res
+        .status(400)
+        .json({ message: `Error de solicitud: ${error.message}` });
     } else {
       return res.status(500).json({ message: "Error interno del servidor." });
     }
   }
 });
-
 
 export default router;
