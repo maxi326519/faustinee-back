@@ -5,6 +5,7 @@ import {
   updatePost,
   deletePost,
   saveImagesByPost,
+  getPostsBySlug,
 } from "./controllers/posts";
 import multer from "multer";
 import path from "path";
@@ -87,6 +88,25 @@ router.get("/", async (req, res) => {
     };
 
     const posts = await getPosts(filters);
+
+    return res.status(200).json(posts);
+  } catch (error) {
+    console.error("Error al obtener publicaciones:", error);
+    return res.status(500).json({
+      message: "Error interno del servidor al obtener publicaciones.",
+      details: (error as any).message,
+    });
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id)
+      return res.status(400).json({ message: "id de publicación requerido." });
+
+    const posts = await getPostsBySlug(id);
 
     return res.status(200).json(posts);
   } catch (error) {

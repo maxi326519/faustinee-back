@@ -12,7 +12,7 @@ export const model = (sequelize: any, DataTypes: any) => {
         allowNull: false,
       },
       role: {
-        type: DataTypes.ENUM("Admin", "Asistente"),
+        type: DataTypes.ENUM("Admin", "User"),
         allowNull: false,
       },
       status: {

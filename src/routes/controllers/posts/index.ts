@@ -44,6 +44,12 @@ export async function getPosts(filters: {
   };
 }
 
+export async function getPostsBySlug(slug: string) {
+  const post = await Posts.findOne({ where: { slug } });
+  if (!post) throw new Error("post not found");
+  return post;
+}
+
 // Crear una publicación nueva
 export async function setPost(data: PostTS, file: Express.Multer.File) {
   // Create post
