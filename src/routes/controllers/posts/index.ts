@@ -22,10 +22,22 @@ export async function getPosts(filters: {
   const order: OrderItem[] = [];
   const where: WhereOptions = { state: "Pendiente" };
 
-  if (latest) order.push(["date", "DESC"]);
-  if (mustRead) order.push(["reads", "DESC"]);
-  if (order.length === 0) order.push(["date", "DESC"]);
-  if (category) where.category = category;
+  // primero por fijado (true primero, false después)
+  order.push(["fixedHome", "DESC"]);
+
+  if (category) {
+    where.category = category;
+    order.push(["fixedCategory", "DESC"]);
+  }
+
+  // después según filtros
+  if (latest) {
+    order.push(["date", "DESC"]);
+  } else if (mustRead) {
+    order.push(["reads", "DESC"]);
+  } else {
+    order.push(["date", "DESC"]);
+  }
 
   const { rows: posts, count: totalItems } = await Posts.findAndCountAll({
     limit,

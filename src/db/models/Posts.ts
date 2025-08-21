@@ -59,6 +59,14 @@ export const model = (sequelize: any, DataTypes: any) => {
         type: DataTypes.DATE,
         allowNull: false,
       },
+      fixedHome: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+      },
+      fixedCategory: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+      },
     },
     {
       timestamps: false,
