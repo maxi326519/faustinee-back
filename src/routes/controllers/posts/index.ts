@@ -14,20 +14,42 @@ export async function getPosts(filters: {
   latest?: boolean;
   mustRead?: boolean;
   category?: string;
+  published?: boolean;
+  state?: string;
 }) {
-  const { page = 1, items = 10, latest, mustRead, category } = filters;
+  const {
+    page = 1,
+    items = 10,
+    latest,
+    mustRead,
+    category,
+    published,
+    state,
+  } = filters;
 
   const offset = (page - 1) * items;
   const limit = items;
   const order: OrderItem[] = [];
-  const where: WhereOptions = { state: "Pendiente", date: { $lt: new Date() } };
+  const where: WhereOptions = {
+    state: "Pendiente",
+    // date: { $lte: new Date() }, // Traer publicaciones anteriores o iguales a la fecha actual
+  };
 
   // primero por fijado (true primero, false después)
   order.push(["fixedHome", "DESC"]);
 
+  if (state) {
+    where.state = state;
+  }
+
   if (category) {
     where.category = category;
     order.push(["fixedCategory", "DESC"]);
+  }
+
+  // Filtrar por publicaciones publicadas si el parámetro está presente
+  if (published !== undefined) {
+    where.state = published ? "Publicado" : "Pendiente";
   }
 
   // después según filtros
@@ -45,8 +67,6 @@ export async function getPosts(filters: {
     order,
     where,
   });
-
-  console.log(posts, totalItems);
 
   return {
     items: posts,
