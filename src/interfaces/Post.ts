@@ -9,6 +9,8 @@ export interface PostTS {
   reads: number;
   author: string;
   date: Date | string;
+  fixedHome: boolean;
+  fixedCategory: boolean;
 }
 
 export enum PostState {

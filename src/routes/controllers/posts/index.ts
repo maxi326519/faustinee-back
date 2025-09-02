@@ -75,6 +75,8 @@ export async function setPost(data: PostTS, file: Express.Multer.File) {
     reads: data.reads,
     author: data.author,
     date: data.date,
+    fixedHome: data.fixedHome,
+    fixedCategory: data.fixedCategory,
   });
 
   let lastPost: PostTS = { ...newPost.dataValues };
