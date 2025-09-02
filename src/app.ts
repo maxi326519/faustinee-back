@@ -16,6 +16,7 @@ const uploadsPath = path.join(__dirname, "../uploads");
 // Cors options
 const corsOptions = {
   origin: [
+    "https://faustinee.com",
     "https://faustinee.mipanel.online",
     "http://localhost:5174",
     "http://localhost:5173",
