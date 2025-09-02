@@ -42,7 +42,7 @@ export const model = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       state: {
-        type: DataTypes.ENUM("Pendiente", "Publicado"),
+        type: DataTypes.ENUM("Pendiente", "Publicado", "Oculto"),
         allowNull: true,
         defaultValue: "Pendiente",
       },

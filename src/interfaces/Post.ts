@@ -16,4 +16,5 @@ export interface PostTS {
 export enum PostState {
   PENDIENTE = "Pendiente",
   PUBLICADO = "Publicado",
+  OCULTO = "Oculto",
 }

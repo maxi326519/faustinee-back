@@ -77,7 +77,14 @@ router.post("/:id/img", upload.single("file"), async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const { page = 1, items = 10, latest, mustRead, category } = req.query;
+    const {
+      page = 1,
+      items = 10,
+      latest,
+      mustRead,
+      category,
+      state,
+    } = req.query;
 
     const filters = {
       page: parseInt(page as string),
@@ -85,6 +92,7 @@ router.get("/", async (req, res) => {
       latest: latest === "true",
       mustRead: mustRead === "true",
       category: category as string,
+      state: state as string,
     };
 
     const posts = await getPosts(filters);

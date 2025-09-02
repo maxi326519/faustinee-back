@@ -20,7 +20,7 @@ export async function getPosts(filters: {
   const offset = (page - 1) * items;
   const limit = items;
   const order: OrderItem[] = [];
-  const where: WhereOptions = { state: "Pendiente" };
+  const where: WhereOptions = { state: "Pendiente", date: { $lt: new Date() } };
 
   // primero por fijado (true primero, false después)
   order.push(["fixedHome", "DESC"]);
@@ -45,6 +45,8 @@ export async function getPosts(filters: {
     order,
     where,
   });
+
+  console.log(posts, totalItems);
 
   return {
     items: posts,
@@ -75,8 +77,8 @@ export async function setPost(data: PostTS, file: Express.Multer.File) {
     reads: data.reads,
     author: data.author,
     date: data.date,
-    fixedHome: data.fixedHome,
-    fixedCategory: data.fixedCategory,
+    fixedHome: data.fixedHome || false,
+    fixedCategory: data.fixedCategory || false,
   });
 
   let lastPost: PostTS = { ...newPost.dataValues };
