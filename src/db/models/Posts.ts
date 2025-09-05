@@ -27,7 +27,7 @@ export const model = (sequelize: any, DataTypes: any) => {
       },
       category: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       contentHtml: {
         type: DataTypes.TEXT,
@@ -42,9 +42,13 @@ export const model = (sequelize: any, DataTypes: any) => {
         allowNull: true,
       },
       state: {
-        type: DataTypes.ENUM("Pendiente", "Publicado", "Oculto"),
+        type: DataTypes.ENUM(
+          "Borrador",
+          "Publicado",
+          "Oculto",
+        ),
         allowNull: true,
-        defaultValue: "Pendiente",
+        defaultValue: "Borrador",
       },
       reads: {
         type: DataTypes.INTEGER,
@@ -53,19 +57,19 @@ export const model = (sequelize: any, DataTypes: any) => {
       },
       author: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       date: {
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: true,
       },
       fixedHome: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
       },
       fixedCategory: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
       },
     },
     {

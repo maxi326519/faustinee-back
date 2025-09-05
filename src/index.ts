@@ -7,7 +7,7 @@ const bcrypt = require("bcrypt");
 const PORT = process.env.PORT || 3001;
 
 // Inicialización
-conn.sync({ force: false }).then(async () => {
+conn.sync({ force: true }).then(async () => {
   // Creamos un usuario
   Users.create({
     name: "Maximiliano García",

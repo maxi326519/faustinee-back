@@ -31,7 +31,6 @@ export async function getPosts(filters: {
   const limit = items;
   const order: OrderItem[] = [];
   const where: WhereOptions = {
-    state: "Pendiente",
     // date: { $lte: new Date() }, // Traer publicaciones anteriores o iguales a la fecha actual
   };
 
@@ -81,6 +80,12 @@ export async function getPosts(filters: {
 export async function getPostsBySlug(slug: string) {
   const post = await Posts.findOne({ where: { slug } });
   if (!post) throw new Error("post not found");
+
+  // Increment the reads count
+  post.update({ reads: (post.dataValues.reads || 0) + 1 });
+
+  console.log("Reads", post.dataValues.reads);
+
   return post;
 }
 

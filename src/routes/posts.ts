@@ -36,8 +36,6 @@ router.post("/", upload.single("file"), async (req, res) => {
     const camposFaltantes = [];
     if (!data.title) camposFaltantes.push("title");
     if (!data.contentHtml) camposFaltantes.push("contentHtml");
-    if (!data.date) camposFaltantes.push("date");
-    if (!file) camposFaltantes.push("file");
 
     if (camposFaltantes.length > 0) {
       return res.status(400).json({
@@ -74,6 +72,39 @@ router.post("/:id/img", upload.single("file"), async (req, res) => {
     res.status(500).json({ error: (error as Error).message });
   }
 });
+
+router.get("/", async (req, res) => {
+  try {
+    const {
+      page = 1,
+      items = 10,
+      latest,
+      mustRead,
+      category,
+      state,
+    } = req.query;
+
+    const filters = {
+      page: parseInt(page as string),
+      items: parseInt(items as string),
+      latest: latest === "true",
+      mustRead: mustRead === "true",
+      category: category as string,
+      state: state as string,
+    };
+
+    const posts = await getPosts(filters);
+
+    return res.status(200).json(posts);
+  } catch (error) {
+    console.error("Error al obtener publicaciones:", error);
+    return res.status(500).json({
+      message: "Error interno del servidor al obtener publicaciones.",
+      details: (error as any).message,
+    });
+  }
+});
+
 
 router.get("/", async (req, res) => {
   try {
